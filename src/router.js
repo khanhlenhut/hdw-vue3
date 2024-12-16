@@ -1,11 +1,11 @@
 import { createWebHistory, createRouter } from "vue-router";
 
-import HomeView from "./components/HomeView.vue";
-import AboutView from "./components/AboutView.vue";
-import ProductView from "./components/ProductView.vue";
-import ContactView from "./components/ContactView.vue";
-import ProductDetailsView from "./components/ProductDetailsView.vue";
-import NotFoundView from "./components/NotFoundView.vue";
+import HomeView from "./pages/HomeView.vue";
+import AboutView from "./pages/AboutView.vue";
+import ProductView from "./pages/ProductView.vue";
+import ContactView from "./pages/ContactView.vue";
+import ProductDetailsView from "./pages/ProductDetailsView.vue";
+import NotFoundView from "./pages/NotFoundView.vue";
 
 const routes = [
   { path: "/", component: HomeView },

@@ -1,6 +1,6 @@
 <template>
-  <h1>Danh sách sản phẩm</h1>
-
+  <!-- <h1>Danh sách sản phẩm</h1> -->
+  <TestItem msg="DANH SÁCH SẢN PHẨM"></TestItem>
   <div class="filter-contain">
     <label for="searchName">Tìm kiếm theo tên:</label>
     <input type="text" id="searchName" v-model="searchName" />
@@ -15,43 +15,23 @@
   </div>
 
   <div class="product-container">
-    <div
+    <ProductItem
       v-for="product in filteredProducts"
       :key="product.id"
-      class="product-item"
-    >
-      <img :src="product.image" alt="Product Image" />
-
-      <router-link :to="'/products/' + product.id" class="product-name">{{
-        product.name
-      }}</router-link>
-
-      <p>{{ formatNumber(product.price) }}</p>
-      <p class="product-description">{{ product.description }}</p>
-      <p>Ngày sản xuất: {{ formatDate(product.manufacturingDate) }}</p>
-      <p>Ngày hết hạn: {{ formatDate(product.expiryDate) }}</p>
-    </div>
+      :product="product"
+    />
   </div>
 </template>
 
 <script>
 import { ref, computed } from "vue";
 import axios from "axios";
-import moment from "moment";
+import TestItem from "../components/TestItem.vue";
+import ProductItem from "../components/ProductItem.vue";
 
 export default {
+  components: { TestItem, ProductItem },
   setup() {
-    const formatDate = (value) => {
-      return moment(value).format("DD/MM/YYYY");
-    };
-
-    const formatNumber = (value) => {
-      return new Intl.NumberFormat("vi-VN", {
-        style: "currency",
-        currency: "VND",
-      }).format(value);
-    };
-
     const searchName = ref("");
     const expiryDateFrom = ref("");
     const expiryDateTo = ref("");
@@ -96,14 +76,12 @@ export default {
       expiryDateFrom,
       expiryDateTo,
       searchName,
-      formatDate,
-      formatNumber,
     };
   },
 };
 </script>
 
-<style lang="sass" scoped>
+<style lang="sass">
 // Variables
 $primary-color: #3498db
 $secondary-color: #2ecc71
