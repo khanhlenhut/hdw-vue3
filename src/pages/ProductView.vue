@@ -1,4 +1,7 @@
 <template>
+  <div v-if="loadingStore.isLoading" class="spinner">
+    <div class="loading-spinner"></div>
+  </div>
   <!-- <h1>Danh sách sản phẩm</h1> -->
   <TestItem msg="DANH SÁCH SẢN PHẨM"></TestItem>
   <div class="filter-contain">
@@ -28,10 +31,13 @@ import { ref, computed } from "vue";
 import axios from "axios";
 import TestItem from "../components/TestItem.vue";
 import ProductItem from "../components/ProductItem.vue";
+import { useLoadingStore } from "../stores/useLoadingStore.js";
 
 export default {
   components: { TestItem, ProductItem },
   setup() {
+    const loadingStore = useLoadingStore();
+
     const searchName = ref("");
     const expiryDateFrom = ref("");
     const expiryDateTo = ref("");
@@ -39,6 +45,7 @@ export default {
     const products = ref([]);
 
     const getProducts = () => {
+      loadingStore.startLoading();
       axios
         .get("http://localhost:3001/products")
         .then((response) => {
@@ -46,6 +53,11 @@ export default {
         })
         .catch((error) => {
           console.log(error);
+        })
+        .finally(() => {
+          setTimeout(() => {
+            loadingStore.stopLoading();
+          }, 10000);
         });
     };
 
@@ -76,6 +88,7 @@ export default {
       expiryDateFrom,
       expiryDateTo,
       searchName,
+      loadingStore,
     };
   },
 };
@@ -181,4 +194,41 @@ h1
 @media (max-width: 768px)
   .product-container
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr))
+
+.spinner
+  position: fixed
+
+  /* Để spinner luôn ở giữa màn hình
+  top: 0
+  left: 0
+  width: 100%
+  height: 100%
+  background-color: rgba(0, 0, 0, 0.5)
+
+  /* Phủ mờ nền
+  display: flex
+  justify-content: center
+  align-items: center
+  z-index: 9999
+
+  /* Đảm bảo spinner hiển thị trên tất cả các nội dung khác
+
+.loading-spinner
+  border: 16px solid #f3f3f3
+
+  /* Light grey
+  border-top: 16px solid #3498db
+
+  /* Blue
+  border-radius: 50%
+  width: 120px
+  height: 120px
+  animation: spin 2s linear infinite
+
+@keyframes spin
+  0%
+    transform: rotate(0deg)
+
+  100%
+    transform: rotate(360deg)
 </style>
