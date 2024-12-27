@@ -2,18 +2,25 @@ import { createWebHistory, createRouter } from "vue-router";
 
 import HomeView from "./pages/HomeView.vue";
 import AboutView from "./pages/AboutView.vue";
-import ProductView from "./pages/ProductView.vue";
+import ProductsView from "./pages/ProductsView.vue";
+import ProductsListView from "./pages/ProductsListView.vue";
+import ProductDetailView from "./pages/ProductDetailView.vue";
 import ContactView from "./pages/ContactView.vue";
-import ProductDetailsView from "./pages/ProductDetailsView.vue";
 import NotFoundView from "./pages/NotFoundView.vue";
 
 const routes = [
-  { path: "/", component: HomeView },
-  { path: "/products", component: ProductView },
-  { path: "/products/:id", component: ProductDetailsView },
-  { path: "/about", component: AboutView },
-  { path: "/contact", component: ContactView },
-
+  { path: "/", name: "home", component: HomeView },
+  {
+    path: "/products",
+    component: ProductsView,
+    children: [
+      { path: "", name: "product-list", component: ProductsListView },
+      { path: ":id", name: "product-details", component: ProductDetailView },
+      // { path: "*", redirect: "/products" }, // catch-all for invalid product id
+    ],
+  },
+  { path: "/about", name: "about", component: AboutView },
+  { path: "/contact", name: "contact", component: ContactView },
   { path: "/p", redirect: "/products" },
   { path: "/:pathMatch(.*)*", component: NotFoundView },
 ];
