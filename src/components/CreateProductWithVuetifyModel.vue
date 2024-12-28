@@ -9,7 +9,7 @@
         <slot>
           <h1>Create Product (Vuetify)</h1>
           <v-sheet class="mx-auto" width="300">
-            <v-form @submit.prevent="submitForm">
+            <v-form @submit.prevent="submitForm" ref="form">
               <v-text-field
                 v-model="title"
                 :rules="titleRules"
@@ -93,17 +93,16 @@ const closeModal = () => {
   isModelOpen.value = false;
 };
 
-// const form = ref(null); TODO: Xử lý chỗ này thực hiện lưu form
+const form = ref(null); // TODO: Xử lý chỗ này thực hiện lưu form
 
 const spinnerStore = useSpinnerStore();
 
 const submitForm = async () => {
-  // const { valid } = await form.value.validate();
+  const { valid } = await form.value.validate();
 
-  // if (!valid) {
-  //   alert("Please fill out the form correctly before submitting.");
-  //   return;
-  // }
+  if (!valid) {
+    return;
+  }
 
   spinnerStore.showSpinner();
   try {
