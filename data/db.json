@@ -1,0 +1,184 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Cà phê sữa đá",
+      "image": "https://via.placeholder.com/150",
+      "price": 25000,
+      "description": "Cà phê đậm đà hòa quyện với sữa đặc, phục vụ cùng đá lạnh.",
+      "manufacturingDate": "2023-06-01",
+      "expiryDate": "2023-06-03"
+    },
+    {
+      "id": 2,
+      "name": "Trà sen vàng",
+      "image": "https://via.placeholder.com/150",
+      "price": 35000,
+      "description": "Trà ướp hương sen thanh mát, giải nhiệt mùa hè.",
+      "manufacturingDate": "2023-06-02",
+      "expiryDate": "2023-06-04"
+    },
+    {
+      "id": 3,
+      "name": "Bánh mì thịt nướng",
+      "image": "https://via.placeholder.com/150",
+      "price": 30000,
+      "description": "Bánh mì giòn tan với nhân thịt nướng thơm lừng.",
+      "manufacturingDate": "2023-06-03",
+      "expiryDate": "2023-06-04"
+    },
+    {
+      "id": 4,
+      "name": "Phở bò tái",
+      "image": "https://via.placeholder.com/150",
+      "price": 55000,
+      "description": "Phở nước dùng đậm đà với thịt bò mềm mại.",
+      "manufacturingDate": "2023-06-03",
+      "expiryDate": "2023-06-04"
+    },
+    {
+      "id": 5,
+      "name": "Bún chả Hà Nội",
+      "image": "https://via.placeholder.com/150",
+      "price": 45000,
+      "description": "Bún mềm ăn kèm chả nướng và nước mắm chua ngọt.",
+      "manufacturingDate": "2023-06-03",
+      "expiryDate": "2023-06-04"
+    },
+    {
+      "id": 6,
+      "name": "Gỏi cuốn tôm thịt",
+      "image": "https://via.placeholder.com/150",
+      "price": 40000,
+      "description": "Gỏi cuốn tươi mát với nhân tôm thịt và rau sống.",
+      "manufacturingDate": "2023-06-03",
+      "expiryDate": "2023-06-05"
+    },
+    {
+      "id": 7,
+      "name": "Cơm tấm sườn bì chả",
+      "image": "https://via.placeholder.com/150",
+      "price": 50000,
+      "description": "Cơm tấm thơm ngon với sườn nướng, bì và chả.",
+      "manufacturingDate": "2023-06-03",
+      "expiryDate": "2023-06-04"
+    },
+    {
+      "id": 8,
+      "name": "Bún bò Huế",
+      "image": "https://via.placeholder.com/150",
+      "price": 60000,
+      "description": "Bún bò cay nồng đặc trưng xứ Huế.",
+      "manufacturingDate": "2023-06-03",
+      "expiryDate": "2023-06-04"
+    },
+    {
+      "id": 9,
+      "name": "Bánh xèo miền Trung",
+      "image": "https://via.placeholder.com/150",
+      "price": 35000,
+      "description": "Bánh xèo giòn rụm với nhân tôm thịt và giá đỗ.",
+      "manufacturingDate": "2023-06-03",
+      "expiryDate": "2023-06-04"
+    },
+    {
+      "id": 10,
+      "name": "Chè thái",
+      "image": "https://via.placeholder.com/150",
+      "price": 25000,
+      "description": "Chè thái mát lạnh với nhiều loại thạch và trái cây.",
+      "manufacturingDate": "2023-06-03",
+      "expiryDate": "2023-06-05"
+    },
+    {
+      "id": 11,
+      "name": "Nem rán Hà Nội",
+      "image": "https://via.placeholder.com/150",
+      "price": 30000,
+      "description": "Nem rán giòn tan với nhân thịt và nấm mèo.",
+      "manufacturingDate": "2023-06-03",
+      "expiryDate": "2023-06-05"
+    },
+    {
+      "id": 12,
+      "name": "Cà ri gà",
+      "image": "https://via.placeholder.com/150",
+      "price": 65000,
+      "description": "Cà ri gà đậm đà ăn kèm bánh mì hoặc cơm.",
+      "manufacturingDate": "2023-06-03",
+      "expiryDate": "2023-06-05"
+    },
+    {
+      "id": 13,
+      "name": "Bún đậu mắm tôm",
+      "image": "https://via.placeholder.com/150",
+      "price": 55000,
+      "description": "Bún đậu thơm ngon với mắm tôm đặc trưng.",
+      "manufacturingDate": "2023-06-03",
+      "expiryDate": "2023-06-04"
+    },
+    {
+      "id": 14,
+      "name": "Hủ tiếu Nam Vang",
+      "image": "https://via.placeholder.com/150",
+      "price": 45000,
+      "description": "Hủ tiếu nước trong với nhiều loại thịt và hải sản.",
+      "manufacturingDate": "2023-06-03",
+      "expiryDate": "2023-06-04"
+    },
+    {
+      "id": 15,
+      "name": "Bánh cuốn Thanh Trì",
+      "image": "https://via.placeholder.com/150",
+      "price": 35000,
+      "description": "Bánh cuốn mỏng mịn ăn kèm chả lụa và nước mắm chua ngọt.",
+      "manufacturingDate": "2023-06-03",
+      "expiryDate": "2023-06-04"
+    },
+    {
+      "id": 16,
+      "name": "Mì Quảng",
+      "image": "https://via.placeholder.com/150",
+      "price": 50000,
+      "description": "Mì Quảng đặc trưng với nước dùng đậm đà và bánh tráng nướng.",
+      "manufacturingDate": "2023-06-03",
+      "expiryDate": "2023-06-04"
+    },
+    {
+      "id": 17,
+      "name": "Cháo lòng",
+      "image": "https://via.placeholder.com/150",
+      "price": 40000,
+      "description": "Cháo lòng nóng hổi với các loại nội tạng heo.",
+      "manufacturingDate": "2023-06-03",
+      "expiryDate": "2023-06-04"
+    },
+    {
+      "id": 18,
+      "name": "Bánh canh cua",
+      "image": "https://via.placeholder.com/150",
+      "price": 55000,
+      "description": "Bánh canh với nước dùng cua đậm đà và chả cua thơm ngon.",
+      "manufacturingDate": "2023-06-03",
+      "expiryDate": "2023-06-04"
+    },
+    {
+      "id": 19,
+      "name": "Cơm gà Hội An",
+      "image": "https://via.placeholder.com/150",
+      "price": 45000,
+      "description": "Cơm gà đặc trưng Hội An với gà xé và nước mắm gừng.",
+      "manufacturingDate": "2023-06-03",
+      "expiryDate": "2023-06-04"
+    },
+    {
+      "id": 20,
+      "name": "Lẩu thái hải sản",
+      "image": "https://via.placeholder.com/150",
+      "price": 150000,
+      "description": "Lẩu thái chua cay với nhiều loại hải sản tươi ngon.",
+      "manufacturingDate": "2023-06-03",
+      "expiryDate": "2023-06-05"
+    }
+  ]
+}
