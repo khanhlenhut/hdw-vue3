@@ -73,13 +73,7 @@
             >
               <i class="pi pi-eye"></i>
             </router-link>
-            <button
-              @click="editProduct(product.id)"
-              class="action-button edit-button"
-            >
-              <!-- <i class="pi pi-pen-to-square"></i> -->
-              <CreateProductWithVuelidateModel :productId="product.id" />
-            </button>
+            <CreateProductWithVuelidateModel :productId="product.id" />
           </div>
         </li>
       </ul>
@@ -137,10 +131,6 @@ const filteredProducts = computed(() => {
 });
 
 const totalProductCount = computed(() => filteredProducts.value.length);
-
-const editProduct = (productId) => {
-  console.log("Edit sản phẩm ID: ", productId);
-};
 </script>
 
 <style lang="scss" scoped>

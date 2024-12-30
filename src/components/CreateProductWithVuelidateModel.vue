@@ -1,6 +1,7 @@
 <template>
   <button class="open-modal-btn" @click="openModal">
-    {{ titleModal }}
+    <span v-if="productId === 0">Create (Vuelidate)</span>
+    <i v-else class="pi pi-pencil"></i>
   </button>
   <Teleport to="#modal">
     <div class="modal-wrap" v-if="isModelOpen">
@@ -15,39 +16,13 @@
           /></span> -->
           <form @submit.prevent="submitForm">
             <BaseInput
-              label="Title"
-              id="title"
-              type="text"
-              v-model="formData.title"
-              :errorMessage="getErrorMessage('title')"
-            />
-            <BaseInput
-              label="Description"
-              id="description"
-              type="text"
-              v-model="formData.description"
-              :errorMessage="getErrorMessage('description')"
-            />
-            <BaseInput
-              label="Category"
-              id="category"
-              type="text"
-              v-model="formData.category"
-              :errorMessage="getErrorMessage('category')"
-            />
-            <BaseInput
-              label="Price"
-              id="price"
-              type="number"
-              v-model="formData.price"
-              :errorMessage="getErrorMessage('price')"
-            />
-            <BaseInput
-              label="Brand"
-              id="brand"
-              type="text"
-              v-model="formData.brand"
-              :errorMessage="getErrorMessage('brand')"
+              v-for="formField in formFields"
+              :key="formField.name"
+              :label="formField.label"
+              :id="formField.name"
+              :type="formField.type"
+              v-model="formData[formField.name]"
+              :errorMessage="getErrorMessage(formField.name)"
             />
             <div class="button-wrap">
               <BaseButton typeButton="primary" type="submit">{{
@@ -79,7 +54,15 @@ const props = defineProps({
 });
 
 const titleModal =
-  props.productId === 0 ? "Create " : "Edit " + "Product (Vuelidate)";
+  props.productId === 0 ? "Create (Vuelidate)" : "Edit (Vuelidate)";
+
+const formFields = [
+  { name: "title", label: "Title", type: "text" },
+  { name: "description", label: "Description", type: "text" },
+  { name: "category", label: "Category", type: "text" },
+  { name: "price", label: "Price", type: "number" },
+  { name: "brand", label: "Brand", type: "text" },
+];
 
 // Modal state
 const isModelOpen = ref(false);
