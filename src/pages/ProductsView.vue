@@ -1,13 +1,9 @@
 <template>
   <div>
     <h1>Products</h1>
-
     <CreateProductWithVuelidateModel />
     <CreateProductWithVeevalidateModel />
     <CreateProductWithVuetifyModel />
-
-    <!-- <DynamicForm :schema="formSchema" /> -->
-
     <router-view />
   </div>
 </template>

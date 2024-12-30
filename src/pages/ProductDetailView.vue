@@ -1,5 +1,4 @@
 <template>
-  <SpinnerLoading></SpinnerLoading>
   <div v-if="product" class="product-detail">
     <h2>{{ product.title }}</h2>
     <div class="product-info">
@@ -16,28 +15,19 @@
 <script setup>
 import { ref } from "vue";
 import { useRoute } from "vue-router";
-import axios from "axios";
-import SpinnerLoading from "@/components/SpinnerLoading.vue";
-import { useSpinnerStore } from "@/stores/useSpinnerStore.js";
+import api from "@/plugins/axios";
 
 const route = useRoute();
 const product = ref(null);
-var spinnerStore = useSpinnerStore();
 
-const getProduct = () => {
-  spinnerStore.showSpinner();
-  axios
-    .get(`https://dummyjson.com/products/${route.params.id}`)
-    .then((response) => {
-      product.value = response.data;
-      console.log("Data Product: ", response.data);
-    })
-    .catch((error) => {
-      console.log("Error: ", error);
-    })
-    .finally(() => {
-      spinnerStore.hideSpinner();
-    });
+const getProduct = async () => {
+  try {
+    const response = await api.get(`/products/${route.params.id}`);
+    product.value = response.data;
+    console.log("Sản phẩm: ", response.data);
+  } catch (error) {
+    console.error("Lỗi: ", error);
+  }
 };
 
 getProduct();

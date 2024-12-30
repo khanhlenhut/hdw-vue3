@@ -1,5 +1,4 @@
 <template>
-  <SpinnerLoading></SpinnerLoading>
   <div>
     <h2>Product List ({{ totalProductCount }})</h2>
 
@@ -77,35 +76,22 @@
 
 <script setup>
 import { ref, computed } from "vue";
-// import axios from "axios";
-import axiosInstance from "@/plugins/axios";
-import SpinnerLoading from "@/components/SpinnerLoading.vue";
-import { useSpinnerStore } from "@/stores/useSpinnerStore.js";
+import api from "@/plugins/axios";
 import BaseInput from "@/components/BaseInput.vue";
 
 const products = ref([]);
-
-const spinnerStore = useSpinnerStore();
-
 const searchQueryByFilter = ref("");
 const createDateFrom = ref("");
-
 const createDateTo = ref("");
 
-const getProducts = () => {
-  spinnerStore.showSpinner();
-  axiosInstance
-    .get("/products")
-    .then((response) => {
-      products.value = response.data.products;
-      console.log("Data Products: ", response.data.products);
-    })
-    .catch((error) => {
-      console.log("Error: ", error);
-    })
-    .finally(() => {
-      spinnerStore.hideSpinner();
-    });
+const getProducts = async () => {
+  try {
+    const response = await api.get("/products");
+    products.value = response.data.products;
+    console.log("Danh sách sản phẩm: ", response.data.products);
+  } catch (error) {
+    console.error("Lỗi: ", error);
+  }
 };
 
 getProducts();

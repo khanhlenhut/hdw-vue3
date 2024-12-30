@@ -1,5 +1,4 @@
 <template>
-  <SpinnerLoading></SpinnerLoading>
   <button class="open-modal-btn" @click="openModal">
     Create Product (Vuelidate)
   </button>
@@ -65,9 +64,7 @@
 
 <script setup>
 import { ref, reactive, computed } from "vue";
-import axios from "axios";
-import SpinnerLoading from "@/components/SpinnerLoading.vue";
-import { useSpinnerStore } from "@/stores/useSpinnerStore.js";
+import api from "@/plugins/axios";
 import { useVuelidate } from "@vuelidate/core";
 import { required, maxLength, minValue, helpers } from "@vuelidate/validators";
 
@@ -87,26 +84,22 @@ const formData = reactive({
   brand: "",
 });
 
-// Validation rules
-const rules = computed(() => ({
-  title: {
-    required: helpers.withMessage("Title không được rỗng!", required),
-    maxLength: helpers.withMessage("Title không quá 50 ký tự!", maxLength(50)),
-    mustBeUnique: helpers.withMessage(
-      "Title phải là duy nhất!",
-      helpers.withAsync(checkUniqueTitle)
-    ),
-  },
-  description: { required, maxLength: maxLength(200) },
-  category: { required },
-  price: { required, minValue: minValue(1) },
-  brand: { required },
-}));
-
 // Async validation function for unique title
+// Thêm hàm debounce
+const debounce = (fn, delay) => {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    return new Promise((resolve) => {
+      timeoutId = setTimeout(() => resolve(fn(...args)), delay);
+    });
+  };
+};
+
 const checkUniqueTitle = async (value) => {
+  if (!value) return true;
   try {
-    const response = await axios.get("https://dummyjson.com/products");
+    const response = await api.get("/products");
     const titles = response.data.products.map((p) => p.title);
     return !titles.includes(value);
   } catch (error) {
@@ -114,6 +107,24 @@ const checkUniqueTitle = async (value) => {
     return false;
   }
 };
+
+const debouncedCheckUniqueTitle = debounce(checkUniqueTitle, 1000);
+
+// Validation rules
+const rules = computed(() => ({
+  title: {
+    required: helpers.withMessage("Title không được rỗng!", required),
+    maxLength: helpers.withMessage("Title không quá 50 ký tự!", maxLength(50)),
+    mustBeUnique: helpers.withMessage(
+      "Title phải là duy nhất!",
+      helpers.withAsync(debouncedCheckUniqueTitle)
+    ),
+  },
+  description: { required, maxLength: maxLength(200) },
+  category: { required },
+  price: { required, minValue: minValue(1) },
+  brand: { required },
+}));
 
 // Vuelidate setup
 const v$ = useVuelidate(rules, formData);
@@ -127,30 +138,20 @@ const closeModal = () => {
   isModelOpen.value = false;
 };
 
-// Form submission handler
-const spinnerStore = useSpinnerStore();
-
 const submitForm = async () => {
   v$.value.$touch(); // Kích hoạt validation
   if (!v$.value.$invalid) {
-    spinnerStore.showSpinner();
     try {
-      const response = await axios.post("https://dummyjson.com/products/add", {
-        title: formData.title,
-        description: formData.description,
-        category: formData.category,
-        price: formData.price,
-        brand: formData.brand,
-      });
+      const response = await api.post(
+        "https://dummyjson.com/products/add",
+        formData
+      );
       console.log(response.data);
       alert("Product created successfully!");
       // Xử lý phản hồi thành công ở đây (ví dụ: hiển thị thông báo, đặt lại form, v.v.)
     } catch (error) {
       console.error("Error adding product:", error);
       alert("Error adding product. Please try again later.");
-      // Xử lý lỗi ở đây (ví dụ: hiển thị thông báo lỗi)
-    } finally {
-      spinnerStore.hideSpinner();
     }
   }
 };

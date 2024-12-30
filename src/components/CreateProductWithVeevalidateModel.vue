@@ -1,5 +1,4 @@
 <template>
-  <SpinnerLoading></SpinnerLoading>
   <button class="open-modal-btn" @click="openModal">
     Create Product (Veevalidate)
   </button>
@@ -26,14 +25,9 @@
 
 <script setup>
 import { ref } from "vue";
-
-import axios from "axios";
-
-import SpinnerLoading from "@/components/SpinnerLoading.vue";
-import { useSpinnerStore } from "@/stores/useSpinnerStore.js";
+import api from "@/plugins/axios";
 
 // Components
-// import BaseInput from "@/components/BaseInput.vue";
 import BaseButton from "@/components/BaseButton.vue";
 import * as Yup from "yup";
 import DynamicForm from "@/components/DynamicForm.vue";
@@ -41,9 +35,21 @@ import DynamicForm from "@/components/DynamicForm.vue";
 // Modal state
 const isModelOpen = ref(false);
 
+// Thêm hàm debounce
+const debounce = (fn, delay) => {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    return new Promise((resolve) => {
+      timeoutId = setTimeout(() => resolve(fn(...args)), delay);
+    });
+  };
+};
+
 const checkUniqueTitle = async (value) => {
+  if (!value) return true;
   try {
-    const response = await axios.get("https://dummyjson.com/products");
+    const response = await api.get("/products");
     const titles = response.data.products.map((p) => p.title);
     return !titles.includes(value);
   } catch (error) {
@@ -51,6 +57,8 @@ const checkUniqueTitle = async (value) => {
     return false;
   }
 };
+
+const debouncedCheckUniqueTitle = debounce(checkUniqueTitle, 1000);
 
 const formSchema = {
   fields: [
@@ -61,7 +69,7 @@ const formSchema = {
       rules: Yup.string()
         .max(50, "Title must be at most 50 characters")
         .required("Title is required")
-        .test("uniqueTitle", "Title must be unique", checkUniqueTitle),
+        .test("uniqueTitle", "Title must be unique", debouncedCheckUniqueTitle),
     },
     {
       label: "Description",
@@ -100,27 +108,14 @@ const closeModal = () => {
   isModelOpen.value = false;
 };
 
-const spinnerStore = useSpinnerStore();
-
 const submitForm = async (values) => {
-  spinnerStore.showSpinner();
   try {
-    const response = await axios.post("https://dummyjson.com/products/add", {
-      title: values.title,
-      description: values.description,
-      category: values.category,
-      price: values.price,
-      brand: values.brand,
-    });
+    const response = await api.post("/products/add", values);
     console.log(response.data);
     alert("Product created successfully!");
-    // Xử lý phản hồi thành công ở đây (ví dụ: hiển thị thông báo, đặt lại form, v.v.)
   } catch (error) {
     console.error("Error adding product:", error);
     alert("Error adding product. Please try again later.");
-    // Xử lý lỗi ở đây (ví dụ: hiển thị thông báo lỗi)
-  } finally {
-    spinnerStore.hideSpinner();
   }
 };
 </script>

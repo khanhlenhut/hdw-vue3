@@ -51,9 +51,7 @@
 
 <script setup>
 import { ref } from "vue";
-import axios from "axios";
-import SpinnerLoading from "@/components/SpinnerLoading.vue";
-import { useSpinnerStore } from "@/stores/useSpinnerStore.js";
+import api from "@/plugins/axios";
 
 const title = ref("");
 const description = ref("");
@@ -61,9 +59,35 @@ const category = ref("");
 const price = ref("");
 const brand = ref("");
 
+// Thêm hàm debounce
+const debounce = (fn, delay) => {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    return new Promise((resolve) => {
+      timeoutId = setTimeout(() => resolve(fn(...args)), delay);
+    });
+  };
+};
+
+const checkUniqueTitle = async (value) => {
+  if (!value) return true;
+  try {
+    const response = await api.get("/products");
+    const titles = response.data.products.map((p) => p.title);
+    return !titles.includes(value);
+  } catch (error) {
+    console.error("Lỗi khi kiểm tra trùng lặp:", error);
+    return false;
+  }
+};
+
+const debouncedCheckUniqueTitle = debounce(checkUniqueTitle, 1000);
+
 const titleRules = [
   (v) => !!v || "Title is required",
   (v) => (v && v.length <= 100) || "Title must be less than 100 characters",
+  async (v) => (await debouncedCheckUniqueTitle(v)) || "Title must be unique",
 ];
 
 const descriptionRules = [
@@ -95,8 +119,6 @@ const closeModal = () => {
 
 const form = ref(null); // TODO: Xử lý chỗ này thực hiện lưu form
 
-const spinnerStore = useSpinnerStore();
-
 const submitForm = async () => {
   const { valid } = await form.value.validate();
 
@@ -104,9 +126,8 @@ const submitForm = async () => {
     return;
   }
 
-  spinnerStore.showSpinner();
   try {
-    const response = await axios.post("https://dummyjson.com/products/add", {
+    const response = await api.post("/products/add", {
       title: title.value,
       description: description.value,
       category: category.value,
@@ -119,8 +140,6 @@ const submitForm = async () => {
   } catch (error) {
     console.error("Error adding product:", error);
     alert("Error adding product. Please try again later.");
-  } finally {
-    spinnerStore.hideSpinner();
   }
 };
 </script>

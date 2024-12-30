@@ -1,14 +1,18 @@
 <template>
+  <global-spinner></global-spinner>
   <nav-view></nav-view>
   <router-view></router-view>
 </template>
 
 <script>
 import NavView from "./components/NavView.vue";
+import GlobalSpinner from "./components/GlobalSpinner.vue";
+
 export default {
   name: "App",
   components: {
     NavView: NavView,
+    GlobalSpinner: GlobalSpinner,
   },
 };
 </script>
