@@ -1,12 +1,14 @@
 <template>
   <button class="open-modal-btn" @click="openModal">
-    Create Product (Vuelidate)
+    {{ titleModal }}
   </button>
   <Teleport to="#modal">
     <div class="modal-wrap" v-if="isModelOpen">
       <div class="modal">
         <slot>
-          <h1>Create Product (Vuelidate)</h1>
+          <h1>
+            {{ titleModal }}
+          </h1>
           <!-- Hiển thị toàn bộ lỗi -->
           <!-- <span v-for="error in v$.$errors" :key="error.$uid" style="color: red"
             >{{ error.$property }} - {{ error.$message }}<br
@@ -48,9 +50,9 @@
               :errorMessage="getErrorMessage('brand')"
             />
             <div class="button-wrap">
-              <BaseButton typeButton="primary" type="submit"
-                >Create Product (Vuelidate)</BaseButton
-              >
+              <BaseButton typeButton="primary" type="submit">{{
+                titleModal
+              }}</BaseButton>
               <BaseButton typeButton="danger" @click="closeModal"
                 >Close</BaseButton
               >
@@ -63,7 +65,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from "vue";
+import { ref, reactive, computed, defineProps, watch } from "vue";
 import api from "@/plugins/axios";
 import { useVuelidate } from "@vuelidate/core";
 import { required, maxLength, minValue, helpers } from "@vuelidate/validators";
@@ -71,6 +73,13 @@ import { required, maxLength, minValue, helpers } from "@vuelidate/validators";
 // Components
 import BaseInput from "@/components/BaseInput.vue";
 import BaseButton from "@/components/BaseButton.vue";
+
+const props = defineProps({
+  productId: { type: Number, default: 0, required: false },
+});
+
+const titleModal =
+  props.productId === 0 ? "Create " : "Edit " + "Product (Vuelidate)";
 
 // Modal state
 const isModelOpen = ref(false);
@@ -80,9 +89,37 @@ const formData = reactive({
   title: "",
   description: "",
   category: "",
-  price: "",
+  price: 0,
   brand: "",
 });
+
+// Function to load product data
+const loadProductData = async (id) => {
+  if (id === 0) return; // Không load dữ liệu nếu là tạo mới
+  try {
+    const response = await api.get(`/products/${id}`);
+    const product = response.data;
+
+    formData.title = product.title;
+    formData.description = product.description;
+    formData.category = product.category;
+    formData.price = product.price;
+    formData.brand = product.brand;
+  } catch (error) {
+    console.error("Error loading product data:", error);
+    alert("Error loading product data. Please try again.");
+  }
+};
+
+// Watch for changes in productId
+watch(
+  () => props.productId,
+  (newId) => {
+    if (newId) {
+      loadProductData(newId);
+    }
+  }
+);
 
 // Async validation function for unique title
 // Thêm hàm debounce
@@ -132,6 +169,16 @@ const v$ = useVuelidate(rules, formData);
 // Modal methods
 const openModal = () => {
   isModelOpen.value = true;
+
+  if (props.productId) {
+    loadProductData(props.productId);
+  } else {
+    formData.title = "";
+    formData.description = "";
+    formData.category = "";
+    formData.price = 0;
+    formData.brand = "";
+  }
 };
 
 const closeModal = () => {
@@ -139,19 +186,32 @@ const closeModal = () => {
 };
 
 const submitForm = async () => {
-  v$.value.$touch(); // Kích hoạt validation
+  v$.value.$touch();
   if (!v$.value.$invalid) {
-    try {
-      const response = await api.post(
-        "https://dummyjson.com/products/add",
-        formData
-      );
-      console.log(response.data);
-      alert("Product created successfully!");
-      // Xử lý phản hồi thành công ở đây (ví dụ: hiển thị thông báo, đặt lại form, v.v.)
-    } catch (error) {
-      console.error("Error adding product:", error);
-      alert("Error adding product. Please try again later.");
+    if (props.productId) {
+      try {
+        const response = await api.put(
+          `/products/${props.productId}`,
+          formData
+        );
+        console.log(response.data);
+        alert("Product updated successfully!");
+      } catch (error) {
+        console.error("Error updating product:", error);
+        alert("Error updating product. Please try again later.");
+      }
+    } else {
+      try {
+        const response = await api.post(
+          "https://dummyjson.com/products/add",
+          formData
+        );
+        console.log(response.data);
+        alert("Product created successfully!");
+      } catch (error) {
+        console.error("Error adding product:", error);
+        alert("Error adding product. Please try again later.");
+      }
     }
   }
 };

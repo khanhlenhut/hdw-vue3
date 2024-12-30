@@ -14,8 +14,19 @@ const routes = [
     path: "/products",
     component: ProductsView,
     children: [
-      { path: "", name: "product-list", component: ProductsListView },
-      { path: ":id", name: "product-details", component: ProductDetailView },
+      {
+        path: "",
+        name: "product-list",
+        component: ProductsListView,
+        children: [
+          {
+            path: ":id",
+            name: "product-details",
+            component: ProductDetailView,
+          },
+        ],
+      },
+
       // { path: "*", redirect: "/products" }, // catch-all for invalid product id
     ],
   },

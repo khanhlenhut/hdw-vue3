@@ -1,76 +1,93 @@
 <template>
-  <div>
-    <h2>Product List ({{ totalProductCount }})</h2>
+  <div class="product-page">
+    <div class="product-list-container">
+      <h2>Product List ({{ totalProductCount }})</h2>
 
-    <div>
-      <h5>Normal Input</h5>
       <div>
-        <label>Search: </label>
-        <input
-          v-model="searchQueryByFilter"
+        <h5>Normal Input</h5>
+        <div>
+          <label>Search: </label>
+          <input
+            v-model="searchQueryByFilter"
+            type="text"
+            placeholder="Search products by Filter..."
+          />
+        </div>
+
+        <div>
+          <label for="expiryDateFrom">Create from: </label>
+          <input type="date" id="createDateFrom" v-model="createDateFrom" />
+        </div>
+
+        <div>
+          <label for="expiryDateTo">Create to: </label>
+          <input type="date" id="createDateTo" v-model="createDateTo" />
+        </div>
+      </div>
+
+      <div>
+        <h5>Custom Input</h5>
+        <BaseInput
           type="text"
-          placeholder="Search products by Filter..."
+          label="Search: "
+          id="searchQueryByFilter"
+          v-model="searchQueryByFilter"
+        />
+        <BaseInput
+          type="date"
+          label="Create date form: "
+          id="createDateFrom"
+          v-model="createDateFrom"
+        />
+
+        <BaseInput
+          type="date"
+          label="Create date to: "
+          id="createDateTo"
+          v-model="createDateTo"
         />
       </div>
 
-      <div>
-        <label for="expiryDateFrom">Create from: </label>
-        <input type="date" id="createDateFrom" v-model="createDateFrom" />
-      </div>
-
-      <div>
-        <label for="expiryDateTo">Create to: </label>
-        <input type="date" id="createDateTo" v-model="createDateTo" />
-      </div>
-    </div>
-
-    <div>
-      <h5>Custom Input</h5>
-      <BaseInput
-        type="text"
-        label="Search: "
-        id="searchQueryByFilter"
-        v-model="searchQueryByFilter"
-      />
-      <BaseInput
-        type="date"
-        label="Create date form: "
-        id="createDateFrom"
-        v-model="createDateFrom"
-      />
-
-      <BaseInput
-        type="date"
-        label="Create date to: "
-        id="createDateTo"
-        v-model="createDateTo"
-      />
-    </div>
-    <ul class="product-list">
-      <li
-        v-for="product in filteredProducts"
-        :key="product.id"
-        class="product-item"
-      >
-        <router-link
-          :to="{ name: 'product-details', params: { id: product.id } }"
-          class="product-link"
+      <ul class="product-list">
+        <li
+          v-for="product in filteredProducts"
+          :key="product.id"
+          class="product-item"
         >
-          <img
-            :src="product.thumbnail"
-            :alt="product.title"
-            style="
-              height: 50px;
-              width: 50px;
-              object-fit: cover;
-              cursor: pointer;
-            "
-            class="product-image"
-          />
-          <span class="product-title">{{ product.title }}</span>
-        </router-link>
-      </li>
-    </ul>
+          <router-link
+            :to="{ name: 'product-details', params: { id: product.id } }"
+            class="product-link"
+          >
+            <img
+              :src="product.thumbnail"
+              :alt="product.title"
+              class="product-image"
+            />
+            <span class="product-title">{{ product.title }}</span>
+          </router-link>
+
+          <div class="product-actions">
+            <router-link
+              :to="{ name: 'product-details', params: { id: product.id } }"
+              class="action-button view-button"
+            >
+              <i class="pi pi-eye"></i>
+            </router-link>
+            <button
+              @click="editProduct(product.id)"
+              class="action-button edit-button"
+            >
+              <!-- <i class="pi pi-pen-to-square"></i> -->
+              <CreateProductWithVuelidateModel :productId="product.id" />
+            </button>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="product-details-container">
+      <router-view :key="$route.fullPath"></router-view>
+    </div>
   </div>
 </template>
 
@@ -78,6 +95,7 @@
 import { ref, computed } from "vue";
 import api from "@/plugins/axios";
 import BaseInput from "@/components/BaseInput.vue";
+import CreateProductWithVuelidateModel from "@/components/CreateProductWithVuelidateModel.vue";
 
 const products = ref([]);
 const searchQueryByFilter = ref("");
@@ -119,33 +137,54 @@ const filteredProducts = computed(() => {
 });
 
 const totalProductCount = computed(() => filteredProducts.value.length);
+
+const editProduct = (productId) => {
+  console.log("Edit sản phẩm ID: ", productId);
+};
 </script>
 
-<!-- <style lang="scss" scoped>
+<style lang="scss" scoped>
+.product-page {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+.product-list-container {
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+.product-details-container {
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
 .product-list {
   list-style-type: none;
   padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 20px;
+  gap: 15px;
 }
 
 .product-item {
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
-}
-
-.product-link {
   display: flex;
   flex-direction: column;
-  text-decoration: none;
-  color: inherit;
+}
+
+.product-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-image {
   width: 100%;
-  height: 150px;
+  height: 200px;
   object-fit: cover;
 }
 
@@ -153,5 +192,41 @@ const totalProductCount = computed(() => filteredProducts.value.length);
   padding: 10px;
   text-align: center;
   background-color: #f8f9fa;
+  font-size: 0.9em;
 }
-</style> -->
+
+.product-actions {
+  display: flex;
+  justify-content: space-around;
+  padding: 10px;
+  background-color: #f1f3f5;
+}
+
+.action-button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8em;
+  text-decoration: none;
+  text-align: center;
+
+  &.view-button {
+    background-color: #007bff;
+    color: white;
+
+    &:hover {
+      background-color: #0056b3;
+    }
+  }
+
+  &.edit-button {
+    background-color: #28a745;
+    color: white;
+
+    &:hover {
+      background-color: #218838;
+    }
+  }
+}
+</style>
