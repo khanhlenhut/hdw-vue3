@@ -83,7 +83,7 @@ const formData = reactive({
   title: "",
   description: "",
   category: "",
-  price: 0,
+  price: "",
   brand: "",
 });
 
