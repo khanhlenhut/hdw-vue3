@@ -1,7 +1,14 @@
 <template>
-  <button class="open-modal-btn" @click="openModal">
-    <span v-if="productId === 0">Create (Vuelidate)</span>
-    <i v-else class="pi pi-pencil"></i>
+  <button v-if="productId === 0" class="open-modal-btn" @click="openModal">
+    <span>Create (Vuelidate)</span>
+  </button>
+  <button
+    v-else
+    class="open-modal-btn-edit"
+    @click="openModal"
+    title="Edit product"
+  >
+    <i class="pi pi-pencil"></i>
   </button>
   <Teleport to="#modal">
     <div class="modal-wrap" v-if="isModelOpen">
@@ -215,9 +222,21 @@ const getErrorMessage = (field) => {
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
-
+  margin-right: 10px;
   &:hover {
     background-color: #007bffaf;
+  }
+}
+
+.open-modal-btn-edit {
+  margin-right: 10px;
+  color: #ffd700;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+
+  &:hover {
+    color: #0000df;
   }
 }
 

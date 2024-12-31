@@ -3,9 +3,9 @@
     <div class="product-list-container">
       <h2>Product List ({{ totalProductCount }})</h2>
 
-      <div>
-        <h5>Normal Input</h5>
-        <div>
+      <h4>Normal Input</h4>
+      <div class="search-box">
+        <div class="input-w100">
           <label>Search: </label>
           <input
             v-model="searchQueryByFilter"
@@ -14,19 +14,19 @@
           />
         </div>
 
-        <div>
+        <div class="input-w100">
           <label for="expiryDateFrom">Create from: </label>
           <input type="date" id="createDateFrom" v-model="createDateFrom" />
         </div>
 
-        <div>
+        <div class="input-w100">
           <label for="expiryDateTo">Create to: </label>
           <input type="date" id="createDateTo" v-model="createDateTo" />
         </div>
       </div>
 
-      <div>
-        <h5>Custom Input</h5>
+      <h4>Custom Input</h4>
+      <div class="search-box">
         <BaseInput
           type="text"
           label="Search: "
@@ -54,26 +54,26 @@
           :key="product.id"
           class="product-item"
         >
-          <router-link
-            :to="{ name: 'product-details', params: { id: product.id } }"
-            class="product-link"
-          >
+          <div class="product-content">
             <img
               :src="product.thumbnail"
               :alt="product.title"
               class="product-image"
             />
-            <span class="product-title">{{ product.title }}</span>
-          </router-link>
-
-          <div class="product-actions">
-            <router-link
-              :to="{ name: 'product-details', params: { id: product.id } }"
-              class="action-button view-button"
-            >
-              <i class="pi pi-eye"></i>
-            </router-link>
-            <CreateProductWithVuelidateModel :productId="product.id" />
+            <div class="product-info">
+              <span class="product-title">{{ product.title }}</span>
+              <div class="product-actions">
+                <router-link
+                  :to="{ name: 'product-details', params: { id: product.id } }"
+                  class="action-link view-link"
+                  title="View product details"
+                >
+                  <i class="pi pi-eye"></i>
+                </router-link>
+                <span class="action-separator">|</span>
+                <CreateProductWithVuelidateModel :productId="product.id" />
+              </div>
+            </div>
           </div>
         </li>
       </ul>
@@ -134,17 +134,18 @@ const totalProductCount = computed(() => filteredProducts.value.length);
 </script>
 
 <style lang="scss" scoped>
+$primary-color: #007bff;
+$success-color: #3ab33a;
+$border-color: #ddd;
+$background-color: #f8f9fa;
+
 .product-page {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 20px;
 }
 
-.product-list-container {
-  overflow-y: auto;
-  max-height: 100vh;
-}
-
+.product-list-container,
 .product-details-container {
   overflow-y: auto;
   max-height: 100vh;
@@ -159,64 +160,92 @@ const totalProductCount = computed(() => filteredProducts.value.length);
 }
 
 .product-item {
-  border: 1px solid #ddd;
+  border: 1px solid $border-color;
   border-radius: 8px;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
+
+  .product-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .product-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+
+  .product-info {
+    padding: 10px;
+    background-color: $background-color;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .product-title {
+    font-size: 0.9em;
+    font-weight: bold;
+  }
+
+  .product-actions {
+    display: flex;
+    align-items: center;
+    font-size: 0.8em;
+
+    .action-link {
+      color: $primary-color;
+      text-decoration: none;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .action-separator {
+      margin: 0 5px;
+      color: #ccc;
+    }
+  }
 }
 
-.product-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.product-image {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-}
-
-.product-title {
-  padding: 10px;
-  text-align: center;
-  background-color: #f8f9fa;
-  font-size: 0.9em;
-}
-
-.product-actions {
-  display: flex;
-  justify-content: space-around;
-  padding: 10px;
-  background-color: #f1f3f5;
-}
-
-.action-button {
-  padding: 5px 10px;
-  border: none;
-  border-radius: 4px;
+.view-link {
+  color: $success-color;
   cursor: pointer;
-  font-size: 0.8em;
-  text-decoration: none;
-  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
 
-  &.view-button {
-    background-color: #007bff;
-    color: white;
-
-    &:hover {
-      background-color: #0056b3;
-    }
+  &:hover {
+    color: #0000df;
   }
+}
 
-  &.edit-button {
-    background-color: #28a745;
-    color: white;
+.search-box {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-evenly;
+  align-items: baseline;
+}
 
-    &:hover {
-      background-color: #218838;
-    }
-  }
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.input-w100 {
+  width: 100%;
+  margin-bottom: 10px;
+  margin-right: 10px;
 }
 </style>

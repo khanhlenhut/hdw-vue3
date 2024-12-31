@@ -122,6 +122,7 @@ const submitForm = async (values) => {
 
 <style lang="scss" scoped>
 .open-modal-btn {
+  margin-right: 10px;
   padding: 10px 20px;
   background-color: #007bff;
   color: white;

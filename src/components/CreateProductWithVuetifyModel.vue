@@ -1,14 +1,12 @@
 <template>
   <SpinnerLoading></SpinnerLoading>
-  <button class="open-modal-btn" @click="openModal">
-    Create Product (Vuetify)
-  </button>
+  <button class="open-modal-btn" @click="openModal">Create (Vuetify)</button>
   <Teleport to="#modal">
     <div class="modal-wrap" v-if="isModelOpen">
       <div class="modal">
         <slot>
-          <h1>Create Product (Vuetify)</h1>
-          <v-sheet class="mx-auto" width="300">
+          <h1>Create (Vuetify)</h1>
+          <v-sheet class="mx-auto">
             <v-form @submit.prevent="submitForm" ref="form">
               <v-text-field
                 v-model="title"
@@ -146,6 +144,7 @@ const submitForm = async () => {
 
 <style lang="scss" scoped>
 .open-modal-btn {
+  margin-right: 10px;
   padding: 10px 20px;
   background-color: #007bff;
   color: white;

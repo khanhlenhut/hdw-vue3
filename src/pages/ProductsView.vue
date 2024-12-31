@@ -1,9 +1,11 @@
 <template>
   <div>
     <h1>Products</h1>
-    <CreateProductWithVuelidateModel />
-    <CreateProductWithVeevalidateModel />
-    <CreateProductWithVuetifyModel />
+    <div>
+      <CreateProductWithVuelidateModel />
+      <CreateProductWithVeevalidateModel />
+      <CreateProductWithVuetifyModel />
+    </div>
     <router-view />
   </div>
 </template>
