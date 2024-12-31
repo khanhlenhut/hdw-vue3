@@ -2,6 +2,9 @@
   <div v-if="isLoading" class="global-spinner">
     <div class="spinner"></div>
   </div>
+  <!-- <div v-if="isLoading" class="global-spinner">
+    <i class="pi pi-spin pi-cog" style="font-size: 2rem"></i>
+  </div> -->
 </template>
 
 <script setup>

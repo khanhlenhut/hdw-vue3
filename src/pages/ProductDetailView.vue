@@ -19,7 +19,10 @@
         <!-- <p><strong>ID:</strong> {{ product.id }}</p> -->
         <p><strong>Description:</strong> {{ product.description }}</p>
         <p><strong>Category:</strong> {{ product.category }}</p>
-        <p><strong>Price:</strong> ${{ product.price.toFixed(2) }}</p>
+        <p>
+          <strong>Price:</strong>
+          <span v-format-number>{{ product.price }}</span>
+        </p>
         <p><strong>Tags:</strong> {{ product.tags.join(", ") }}</p>
         <p><strong>Brand:</strong> {{ product.brand }}</p>
       </div>
@@ -28,23 +31,9 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useRoute } from "vue-router";
-import api from "@/plugins/axios";
+import useGetProductById from "@/composables/products/useGetProductById.js";
 
-const route = useRoute();
-const product = ref(null);
-
-const getProduct = async () => {
-  try {
-    const response = await api.get(`/products/${route.params.id}`);
-    product.value = response.data;
-    console.log("Sản phẩm: ", response.data);
-  } catch (error) {
-    console.error("Lỗi: ", error);
-  }
-};
-
+const { product, getProduct } = useGetProductById();
 getProduct();
 </script>
 

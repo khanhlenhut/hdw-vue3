@@ -1,11 +1,19 @@
 <template>
   <nav class="nav">
-    <router-link to="/">Trang chủ</router-link>
-    <router-link to="/products">Sản phẩm</router-link>
-    <router-link to="/about">Giới thiệu</router-link>
-    <router-link to="/contact">Liên hệ</router-link>
+    <router-link v-for="route in routes" :key="route.path" :to="route.path">
+      {{ route.name }}
+    </router-link>
   </nav>
 </template>
+
+<script setup>
+const routes = [
+  { path: "/", name: "Trang chủ" },
+  { path: "/products", name: "Sản phẩm" },
+  { path: "/about", name: "Giới thiệu" },
+  { path: "/contact", name: "Liên hệ" },
+];
+</script>
 
 <style lang="scss" scoped>
 .nav {

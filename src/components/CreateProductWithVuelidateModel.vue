@@ -192,10 +192,7 @@ const submitForm = async () => {
       }
     } else {
       try {
-        const response = await api.post(
-          "https://dummyjson.com/products/add",
-          formData
-        );
+        const response = await api.post("/products/add", formData);
         console.log(response.data);
         alert("Product created successfully!");
       } catch (error) {

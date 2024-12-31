@@ -91,51 +91,22 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import api from "@/plugins/axios";
+import { ref } from "vue";
 import BaseInput from "@/components/BaseInput.vue";
 import CreateProductWithVuelidateModel from "@/components/CreateProductWithVuelidateModel.vue";
+import useGetAllProducts from "@/composables/products/useGetAllProducts.js";
 
-const products = ref([]);
 const searchQueryByFilter = ref("");
 const createDateFrom = ref("");
 const createDateTo = ref("");
 
-const getProducts = async () => {
-  try {
-    const response = await api.get("/products");
-    products.value = response.data.products;
-    console.log("Danh sách sản phẩm: ", response.data.products);
-  } catch (error) {
-    console.error("Lỗi: ", error);
-  }
-};
+const { getProducts, filteredProducts, totalProductCount } = useGetAllProducts(
+  searchQueryByFilter,
+  createDateFrom,
+  createDateTo
+);
 
 getProducts();
-
-const filteredProducts = computed(() => {
-  const filtered = products.value.filter((product) => {
-    const createDate = new Date(product.meta.createdAt);
-
-    const isAfterExpiryFrom =
-      !createDateFrom.value || createDate >= new Date(createDateFrom.value);
-    const isBeforeExpiryTo =
-      !createDateTo.value || createDate <= new Date(createDateTo.value);
-
-    const isNameMatch =
-      product.title
-        .toLowerCase()
-        .includes(searchQueryByFilter.value.toLowerCase()) ||
-      product.description
-        .toLowerCase()
-        .includes(searchQueryByFilter.value.toLowerCase());
-    return isAfterExpiryFrom && isBeforeExpiryTo && isNameMatch;
-  });
-
-  return filtered;
-});
-
-const totalProductCount = computed(() => filteredProducts.value.length);
 </script>
 
 <style lang="scss" scoped>
