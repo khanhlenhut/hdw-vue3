@@ -1,6 +1,6 @@
 <template>
   <div v-if="product" class="product-detail">
-    <h2 class="product-title">{{ product.title }}</h2>
+    <h2 v-rainbow class="product-title">{{ product.title }}</h2>
     <div class="product-content">
       <div class="product-image">
         <div class="main-image">

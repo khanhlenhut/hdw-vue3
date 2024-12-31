@@ -1,7 +1,7 @@
 <template>
   <div class="product-page">
     <div class="product-list-container">
-      <h2>Product List ({{ totalProductCount }})</h2>
+      <h2 v-rainbow>Product List ({{ totalProductCount }})</h2>
 
       <h4>Normal Input</h4>
       <div class="search-box">
@@ -48,35 +48,40 @@
         />
       </div>
 
-      <ul class="product-list">
-        <li
-          v-for="product in filteredProducts"
-          :key="product.id"
-          class="product-item"
-        >
-          <div class="product-content">
-            <img
-              :src="product.thumbnail"
-              :alt="product.title"
-              class="product-image"
-            />
-            <div class="product-info">
-              <span class="product-title">{{ product.title }}</span>
-              <div class="product-actions">
-                <router-link
-                  :to="{ name: 'product-details', params: { id: product.id } }"
-                  class="action-link view-link"
-                  title="View product details"
-                >
-                  <i class="pi pi-eye"></i>
-                </router-link>
-                <span class="action-separator">|</span>
-                <CreateProductWithVuelidateModel :productId="product.id" />
-              </div>
-            </div>
-          </div>
-        </li>
-      </ul>
+      <table class="product-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Image</th>
+            <th>Title</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(product, index) in filteredProducts" :key="product.id">
+            <td>{{ index + 1 }}</td>
+            <td>
+              <img
+                :src="product.thumbnail"
+                :alt="product.title"
+                class="product-image"
+              />
+            </td>
+            <td>{{ product.title }}</td>
+            <td>
+              <router-link
+                :to="{ name: 'product-details', params: { id: product.id } }"
+                class="action-link view-link"
+                title="View product details"
+              >
+                <i class="pi pi-eye"></i>
+              </router-link>
+              <span class="action-separator">|</span>
+              <CreateProductWithVuelidateModel :productId="product.id" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     <div class="product-details-container">
@@ -151,73 +156,51 @@ $background-color: #f8f9fa;
   max-height: 100vh;
 }
 
-.product-list {
-  list-style-type: none;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 15px;
-}
+.product-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  background-color: $background-color;
+  text-align: left;
 
-.product-item {
-  border: 1px solid $border-color;
-  border-radius: 8px;
-  overflow: hidden;
+  thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: $primary-color;
+    color: white;
+  }
 
-  .product-content {
-    display: flex;
-    flex-direction: column;
+  th,
+  td {
+    padding: 10px;
+    border: 1px solid $border-color;
+  }
+
+  th {
+    background-color: $primary-color;
+    color: white;
   }
 
   .product-image {
-    width: 100%;
-    height: 200px;
+    width: 80px;
+    height: 80px;
     object-fit: cover;
   }
 
-  .product-info {
-    padding: 10px;
-    background-color: $background-color;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+  .action-link {
+    color: $primary-color;
+    text-decoration: none;
+    cursor: pointer;
 
-  .product-title {
-    font-size: 0.9em;
-    font-weight: bold;
-  }
-
-  .product-actions {
-    display: flex;
-    align-items: center;
-    font-size: 0.8em;
-
-    .action-link {
-      color: $primary-color;
-      text-decoration: none;
-      cursor: pointer;
-
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-
-    .action-separator {
-      margin: 0 5px;
-      color: #ccc;
+    &:hover {
+      text-decoration: underline;
     }
   }
-}
 
-.view-link {
-  color: $success-color;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: bold;
-
-  &:hover {
-    color: #0000df;
+  .action-separator {
+    margin: 0 5px;
+    color: #ccc;
   }
 }
 
