@@ -8,36 +8,25 @@
           <h1>Create (Vuetify)</h1>
           <v-sheet class="mx-auto">
             <v-form @submit.prevent="submitForm" ref="form">
-              <v-text-field
-                v-model="title"
-                :rules="titleRules"
-                label="Title"
-              ></v-text-field>
-              <v-textarea
-                v-model="description"
-                :rules="descriptionRules"
-                label="Description"
-              ></v-textarea>
-              <v-text-field
-                v-model="category"
-                :rules="categoryRules"
-                label="Category"
-              ></v-text-field>
-              <v-text-field
-                v-model="price"
-                :rules="priceRules"
-                label="Price"
-                type="number"
-              ></v-text-field>
-              <v-text-field
-                v-model="brand"
-                :rules="brandRules"
-                label="Brand"
-              ></v-text-field>
+              <template v-for="field in fields" :key="field.model">
+                <v-text-field
+                  v-if="field.type !== 'textarea'"
+                  v-model="formData[field.model]"
+                  :rules="field.rules"
+                  :label="field.label"
+                  :type="field.type"
+                  variant="outlined"
+                ></v-text-field>
+                <v-textarea
+                  v-else
+                  v-model="formData[field.model]"
+                  :rules="field.rules"
+                  :label="field.label"
+                  variant="outlined"
+                ></v-textarea>
+              </template>
               <div class="button-wrap">
-                <v-btn class="mt-2" type="submit" color="blue"
-                  >Create Product</v-btn
-                >
+                <v-btn class="mt-2" type="submit" color="blue">Create</v-btn>
                 <v-btn @click="closeModal" color="red">Close</v-btn>
               </div>
             </v-form>
@@ -49,40 +38,67 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 
 import api from "@/plugins/axios";
 
 import useProducts from "@/composables/products/useProducts";
 
-const title = ref("");
-const description = ref("");
-const category = ref("");
-const price = ref("");
-const brand = ref("");
-
 const { debouncedCheckUniqueTitle } = useProducts();
 
-const titleRules = [
-  (v) => !!v || "Title is required",
-  (v) => (v && v.length <= 100) || "Title must be less than 100 characters",
-  async (v) => (await debouncedCheckUniqueTitle(v)) || "Title must be unique",
+const formData = reactive({
+  title: "",
+  description: "",
+  category: "",
+  price: "",
+  brand: "",
+});
+
+const fields = [
+  {
+    model: "title",
+    label: "Title",
+    type: "text",
+    rules: [
+      (v) => !!v || "Title is required",
+      (v) => (v && v.length <= 50) || "Title must be less than 50 characters",
+      async (v) =>
+        (await debouncedCheckUniqueTitle(v)) || "Title must be unique",
+    ],
+  },
+  {
+    model: "description",
+    label: "Description",
+    type: "textarea",
+    rules: [
+      (v) => !!v || "Description is required",
+      (v) =>
+        (v && v.length <= 200) ||
+        "Description must be less than 200 characters",
+    ],
+  },
+  {
+    model: "category",
+    label: "Category",
+    type: "text",
+    rules: [(v) => !!v || "Category is required"],
+  },
+  {
+    model: "price",
+    label: "Price",
+    type: "number",
+    rules: [
+      (v) => !!v || "Price is required",
+      (v) => (v && v > 0) || "Price must be greater than 0",
+    ],
+  },
+  {
+    model: "brand",
+    label: "Brand",
+    type: "text",
+    rules: [(v) => !!v || "Brand is required"],
+  },
 ];
-
-const descriptionRules = [
-  (v) => !!v || "Description is required",
-  (v) =>
-    (v && v.length <= 500) || "Description must be less than 500 characters",
-];
-
-const categoryRules = [(v) => !!v || "Category is required"];
-
-const priceRules = [
-  (v) => !!v || "Price is required",
-  (v) => (v && v > 0) || "Price must be greater than 0",
-];
-
-const brandRules = [(v) => !!v || "Brand is required"];
 
 // Modal state
 const isModelOpen = ref(false);
@@ -96,7 +112,7 @@ const closeModal = () => {
   isModelOpen.value = false;
 };
 
-const form = ref(null); // TODO: Xử lý chỗ này thực hiện lưu form
+const form = ref(null);
 
 const submitForm = async () => {
   const { valid } = await form.value.validate();
@@ -106,15 +122,9 @@ const submitForm = async () => {
   }
 
   try {
-    const response = await api.post("/products/add", {
-      title: title.value,
-      description: description.value,
-      category: category.value,
-      price: Number(price.value),
-      brand: brand.value,
-    });
+    const response = await api.post("/products/add", formData);
     console.log(response.data);
-    alert("Product created successfully!");
+    alert(`Product created successfully with ID: ${response.data.id}!`);
     closeModal();
   } catch (error) {
     console.error("Error adding product:", error);

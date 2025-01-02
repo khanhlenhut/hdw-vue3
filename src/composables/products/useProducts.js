@@ -15,7 +15,7 @@ export default function () {
   const checkUniqueTitle = async (value) => {
     if (!value) return true;
     try {
-      const response = await api.get("/products");
+      const response = await api.get("/products?limit=200&skip=0");
       const titles = response.data.products.map((p) => p.title);
       return !titles.includes(value);
     } catch (error) {

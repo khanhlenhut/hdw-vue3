@@ -1,4 +1,53 @@
 <template>
+  <!-- <v-container>
+    <v-row>
+      <v-col cols="8">
+        <v-table height="550px" fixed-header>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(product, index) in products" :key="product.id">
+              <th class="text-center">{{ index + 1 }}</th>
+              <td class="text-left">{{ product.title }}</td>
+              <td class="text-left">{{ product.category }}</td>
+              <td class="text-right">{{ product.price }}</td>
+              <td>
+                <router-link
+                  :to="{ name: 'product-details', params: { id: product.id } }"
+                  class="action-link view-link"
+                  title="View product details"
+                >
+                  <i class="pi pi-eye"></i>
+                </router-link>
+                <span class="action-separator"> | </span>
+                <CreateProductWithVuelidateModel :productId="product.id" />
+              </td>
+            </tr>
+          </tbody>
+        </v-table>
+      </v-col>
+      <v-col cols="4">
+        <router-view :key="$route.fullPath"></router-view>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12">
+        <v-pagination
+          v-model="currentPage"
+          :length="totalPagess"
+          @update:model-value="fetchProducts"
+        ></v-pagination>
+      </v-col>
+    </v-row>
+  </v-container> -->
+
   <div class="product-page">
     <div class="product-list-container">
       <h2 v-rainbow>Product List ({{ totalProductCount }})</h2>
@@ -31,6 +80,7 @@
           type="text"
           label="Search: "
           id="searchQueryByFilter"
+          placeholder="Search products by Filter..."
           v-model="searchQueryByFilter"
         />
         <BaseInput
@@ -82,6 +132,17 @@
           </tr>
         </tbody>
       </table>
+
+      <div class="text-center">
+        <v-pagination
+          v-model="page"
+          :length="totalPages"
+          next-icon="mdi-menu-right"
+          prev-icon="mdi-menu-left"
+          @click="changePage(page)"
+        >
+        </v-pagination>
+      </div>
     </div>
 
     <div class="product-details-container">
@@ -91,7 +152,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed, watch } from "vue";
 import BaseInput from "@/components/BaseInput.vue";
 import CreateProductWithVuelidateModel from "@/components/CreateProductWithVuelidateModel.vue";
 import useGetAllProducts from "@/composables/products/useGetAllProducts.js";
@@ -99,14 +160,54 @@ import useGetAllProducts from "@/composables/products/useGetAllProducts.js";
 const searchQueryByFilter = ref("");
 const createDateFrom = ref("");
 const createDateTo = ref("");
+const limit = ref(30);
+const page = ref(1);
 
-const { getProducts, filteredProducts, totalProductCount } = useGetAllProducts(
-  searchQueryByFilter,
-  createDateFrom,
-  createDateTo
+const { getProducts, filteredProducts, totalProductCount, totalProduct } =
+  useGetAllProducts(searchQueryByFilter, createDateFrom, createDateTo);
+
+const totalPages = computed(() => Math.ceil(totalProduct.value / limit.value));
+
+const skip = computed(() => (page.value - 1) * limit.value);
+
+watch(
+  [page, limit],
+  () => {
+    getProducts(limit.value, skip.value);
+  },
+  { immediate: true }
 );
 
-getProducts();
+watch([searchQueryByFilter, createDateFrom, createDateTo], () => {
+  page.value = 1;
+  getProducts(limit.value, skip.value);
+});
+
+const changePage = (newPage) => {
+  page.value = newPage;
+};
+
+// const products = ref([]);
+// const currentPage = ref(1);
+// const totalPagess = ref(1);
+
+// const fetchProducts = async () => {
+//   const limit = 30;
+//   const skip = (currentPage.value - 1) * limit;
+
+//   try {
+//     const response = await api.get(
+//       `https://dummyjson.com/products?limit=${limit}&skip=${skip}`
+//     );
+//     products.value = response.data.products;
+//     totalPagess.value = Math.ceil(response.data.total / limit);
+//   } catch (error) {
+//     console.error("Error fetching products:", error);
+//     // Xử lý lỗi (ví dụ: hiển thị thông báo lỗi cho người dùng)
+//   }
+// };
+
+// onMounted(fetchProducts);
 </script>
 
 <style lang="scss" scoped>

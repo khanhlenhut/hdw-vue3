@@ -1,19 +1,32 @@
 <template>
   <button class="open-modal-btn" @click="openModal">
-    Create Product (Veevalidate)
+    Create (Veevalidate)
   </button>
   <Teleport to="#modal">
     <div class="modal-wrap" v-if="isModelOpen">
       <div class="modal">
         <slot>
-          <h1>Create Product (Veevalidate)</h1>
-          <DynamicForm :schema="formSchema" :func="submitForm" />
+          <h1>Create (Veevalidate)</h1>
 
-          <div class="button-wrap">
-            <BaseButton typeButton="danger" @click="closeModal"
-              >Close</BaseButton
-            >
-          </div>
+          <Form @submit="submitForm">
+            <div v-for="form in formSchema.fields" :key="form.name">
+              <label :for="form.name">{{ form.label }}</label>
+              <Field
+                :name="form.name"
+                :as="form.as"
+                :type="form.type"
+                :rules="form.rules"
+              />
+              <ErrorMessage class="error-message" :name="form.name" />
+            </div>
+
+            <div class="button-wrap">
+              <BaseButton typeButton="primary" type="submit">Create</BaseButton>
+              <BaseButton typeButton="danger" @click="closeModal"
+                >Close</BaseButton
+              >
+            </div>
+          </Form>
         </slot>
       </div>
     </div>
@@ -28,7 +41,7 @@ import useProducts from "@/composables/products/useProducts";
 // Components
 import BaseButton from "@/components/BaseButton.vue";
 import * as Yup from "yup";
-import DynamicForm from "@/components/DynamicForm.vue";
+import { Form, Field, ErrorMessage } from "vee-validate";
 
 // Modal state
 const isModelOpen = ref(false);
@@ -50,7 +63,9 @@ const formSchema = {
       label: "Description",
       name: "description",
       as: "input",
-      rules: Yup.string().required("Description is required"),
+      rules: Yup.string()
+        .max(200, "Description must be at most 200 characters")
+        .required("Description is required"),
     },
     {
       label: "Category",
@@ -87,7 +102,8 @@ const submitForm = async (values) => {
   try {
     const response = await api.post("/products/add", values);
     console.log(response.data);
-    alert("Product created successfully!");
+    alert(`Product created successfully with ID: ${response.data.id}!`);
+    closeModal();
   } catch (error) {
     console.error("Error adding product:", error);
     alert("Error adding product. Please try again later.");
@@ -159,5 +175,26 @@ const submitForm = async (values) => {
 .button-wrap {
   display: flex;
   justify-content: space-between;
+  margin-top: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
 }
 </style>

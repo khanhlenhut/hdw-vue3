@@ -28,9 +28,9 @@
               :errorMessage="getErrorMessage(formField.name)"
             />
             <div class="button-wrap">
-              <BaseButton typeButton="primary" type="submit">{{
-                titleModal
-              }}</BaseButton>
+              <BaseButton typeButton="primary" type="submit">
+                Create
+              </BaseButton>
               <BaseButton typeButton="danger" @click="closeModal"
                 >Close</BaseButton
               >
@@ -179,7 +179,8 @@ const submitForm = async () => {
       try {
         const response = await api.post("/products/add", formData);
         console.log(response.data);
-        alert(`Product created successfully ${response.data.id}!`);
+        alert(`Product created successfully with ID: ${response.data.id}!`);
+        closeModal();
       } catch (error) {
         console.error("Error adding product:", error);
         alert("Error adding product. Please try again later.");
@@ -270,5 +271,6 @@ const getErrorMessage = (field) => {
 .button-wrap {
   display: flex;
   justify-content: space-between;
+  margin-top: 20px;
 }
 </style>
