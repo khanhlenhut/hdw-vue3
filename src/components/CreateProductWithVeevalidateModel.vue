@@ -10,9 +10,6 @@
           <DynamicForm :schema="formSchema" :func="submitForm" />
 
           <div class="button-wrap">
-            <!-- <BaseButton typeButton="primary" type="submit"
-              >Create Product (Veevalidate)</BaseButton
-            > -->
             <BaseButton typeButton="danger" @click="closeModal"
               >Close</BaseButton
             >
@@ -26,6 +23,7 @@
 <script setup>
 import { ref } from "vue";
 import api from "@/plugins/axios";
+import useProducts from "@/composables/products/useProducts";
 
 // Components
 import BaseButton from "@/components/BaseButton.vue";
@@ -35,30 +33,7 @@ import DynamicForm from "@/components/DynamicForm.vue";
 // Modal state
 const isModelOpen = ref(false);
 
-// Thêm hàm debounce
-const debounce = (fn, delay) => {
-  let timeoutId;
-  return (...args) => {
-    clearTimeout(timeoutId);
-    return new Promise((resolve) => {
-      timeoutId = setTimeout(() => resolve(fn(...args)), delay);
-    });
-  };
-};
-
-const checkUniqueTitle = async (value) => {
-  if (!value) return true;
-  try {
-    const response = await api.get("/products");
-    const titles = response.data.products.map((p) => p.title);
-    return !titles.includes(value);
-  } catch (error) {
-    console.error("Lỗi khi kiểm tra trùng lặp:", error);
-    return false;
-  }
-};
-
-const debouncedCheckUniqueTitle = debounce(checkUniqueTitle, 1000);
+const { debouncedCheckUniqueTitle } = useProducts();
 
 const formSchema = {
   fields: [

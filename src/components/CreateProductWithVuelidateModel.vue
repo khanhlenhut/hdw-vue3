@@ -1,5 +1,5 @@
 <template>
-  <button v-if="productId === 0" class="open-modal-btn" @click="openModal">
+  <button v-if="!productId" class="open-modal-btn" @click="openModal">
     <span>Create (Vuelidate)</span>
   </button>
   <button
@@ -11,16 +11,12 @@
     <i class="pi pi-pencil"></i>
   </button>
   <Teleport to="#modal">
-    <div class="modal-wrap" v-if="isModelOpen">
+    <div class="modal-wrap" v-if="isModalOpen">
       <div class="modal">
         <slot>
           <h1>
             {{ titleModal }}
           </h1>
-          <!-- Hiển thị toàn bộ lỗi -->
-          <!-- <span v-for="error in v$.$errors" :key="error.$uid" style="color: red"
-            >{{ error.$property }} - {{ error.$message }}<br
-          /></span> -->
           <form @submit.prevent="submitForm">
             <BaseInput
               v-for="formField in formFields"
@@ -48,11 +44,13 @@
 
 <script setup>
 import { ref, reactive, computed, defineProps, watch } from "vue";
-import api from "@/plugins/axios";
+
 import { useVuelidate } from "@vuelidate/core";
 import { required, maxLength, minValue, helpers } from "@vuelidate/validators";
 
-// Components
+import api from "@/plugins/axios";
+import useProducts from "@/composables/products/useProducts";
+
 import BaseInput from "@/components/BaseInput.vue";
 import BaseButton from "@/components/BaseButton.vue";
 
@@ -60,8 +58,7 @@ const props = defineProps({
   productId: { type: Number, default: 0, required: false },
 });
 
-const titleModal =
-  props.productId === 0 ? "Create (Vuelidate)" : "Edit (Vuelidate)";
+const titleModal = !props.productId ? "Create (Vuelidate)" : "Edit (Vuelidate)";
 
 const formFields = [
   { name: "title", label: "Title", type: "text" },
@@ -72,7 +69,7 @@ const formFields = [
 ];
 
 // Modal state
-const isModelOpen = ref(false);
+const isModalOpen = ref(false);
 
 // Form data
 const formData = reactive({
@@ -111,46 +108,34 @@ watch(
   }
 );
 
-// Async validation function for unique title
-// Thêm hàm debounce
-const debounce = (fn, delay) => {
-  let timeoutId;
-  return (...args) => {
-    clearTimeout(timeoutId);
-    return new Promise((resolve) => {
-      timeoutId = setTimeout(() => resolve(fn(...args)), delay);
-    });
-  };
-};
-
-const checkUniqueTitle = async (value) => {
-  if (!value) return true;
-  try {
-    const response = await api.get("/products");
-    const titles = response.data.products.map((p) => p.title);
-    return !titles.includes(value);
-  } catch (error) {
-    console.error("Lỗi khi kiểm tra trùng lặp:", error);
-    return false;
-  }
-};
-
-const debouncedCheckUniqueTitle = debounce(checkUniqueTitle, 1000);
+const { debouncedCheckUniqueTitle } = useProducts();
 
 // Validation rules
 const rules = computed(() => ({
   title: {
-    required: helpers.withMessage("Title không được rỗng!", required),
-    maxLength: helpers.withMessage("Title không quá 50 ký tự!", maxLength(50)),
+    required: helpers.withMessage("Title is required", required),
+    maxLength: helpers.withMessage(
+      "Title must not exceed 50 characters",
+      maxLength(50)
+    ),
     mustBeUnique: helpers.withMessage(
-      "Title phải là duy nhất!",
+      "Title must be unique",
       helpers.withAsync(debouncedCheckUniqueTitle)
     ),
   },
-  description: { required, maxLength: maxLength(200) },
-  category: { required },
-  price: { required, minValue: minValue(1) },
-  brand: { required },
+  description: {
+    required: helpers.withMessage("Description is required", required),
+    maxLength: helpers.withMessage(
+      "Description must not exceed 200 characters",
+      maxLength(200)
+    ),
+  },
+  category: { required: helpers.withMessage("Category is required", required) },
+  price: {
+    required: helpers.withMessage("Price is required", required),
+    minValue: helpers.withMessage("Price must be at least 1", minValue(1)),
+  },
+  brand: { required: helpers.withMessage("Brand is required", required) },
 }));
 
 // Vuelidate setup
@@ -158,7 +143,7 @@ const v$ = useVuelidate(rules, formData);
 
 // Modal methods
 const openModal = () => {
-  isModelOpen.value = true;
+  isModalOpen.value = true;
 
   if (props.productId) {
     loadProductData(props.productId);
@@ -172,7 +157,7 @@ const openModal = () => {
 };
 
 const closeModal = () => {
-  isModelOpen.value = false;
+  isModalOpen.value = false;
 };
 
 const submitForm = async () => {
@@ -185,7 +170,7 @@ const submitForm = async () => {
           formData
         );
         console.log(response.data);
-        alert("Product updated successfully!");
+        alert(`Product updated successfully with ID: ${response.data.id}}!`);
       } catch (error) {
         console.error("Error updating product:", error);
         alert("Error updating product. Please try again later.");
@@ -194,7 +179,7 @@ const submitForm = async () => {
       try {
         const response = await api.post("/products/add", formData);
         console.log(response.data);
-        alert("Product created successfully!");
+        alert(`Product created successfully ${response.data.id}!`);
       } catch (error) {
         console.error("Error adding product:", error);
         alert("Error adding product. Please try again later.");

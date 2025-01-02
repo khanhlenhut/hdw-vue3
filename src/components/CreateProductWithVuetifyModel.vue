@@ -34,13 +34,14 @@
                 :rules="brandRules"
                 label="Brand"
               ></v-text-field>
-              <v-btn class="mt-2" type="submit" block>Create Product</v-btn>
+              <div class="button-wrap">
+                <v-btn class="mt-2" type="submit" color="blue"
+                  >Create Product</v-btn
+                >
+                <v-btn @click="closeModal" color="red">Close</v-btn>
+              </div>
             </v-form>
           </v-sheet>
-
-          <div class="button-wrap">
-            <v-btn @click="closeModal">Close</v-btn>
-          </div>
         </slot>
       </div>
     </div>
@@ -49,7 +50,10 @@
 
 <script setup>
 import { ref } from "vue";
+
 import api from "@/plugins/axios";
+
+import useProducts from "@/composables/products/useProducts";
 
 const title = ref("");
 const description = ref("");
@@ -57,30 +61,7 @@ const category = ref("");
 const price = ref("");
 const brand = ref("");
 
-// Thêm hàm debounce
-const debounce = (fn, delay) => {
-  let timeoutId;
-  return (...args) => {
-    clearTimeout(timeoutId);
-    return new Promise((resolve) => {
-      timeoutId = setTimeout(() => resolve(fn(...args)), delay);
-    });
-  };
-};
-
-const checkUniqueTitle = async (value) => {
-  if (!value) return true;
-  try {
-    const response = await api.get("/products");
-    const titles = response.data.products.map((p) => p.title);
-    return !titles.includes(value);
-  } catch (error) {
-    console.error("Lỗi khi kiểm tra trùng lặp:", error);
-    return false;
-  }
-};
-
-const debouncedCheckUniqueTitle = debounce(checkUniqueTitle, 1000);
+const { debouncedCheckUniqueTitle } = useProducts();
 
 const titleRules = [
   (v) => !!v || "Title is required",
@@ -206,5 +187,6 @@ const submitForm = async () => {
 .button-wrap {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 </style>

@@ -26,8 +26,6 @@ const routes = [
           },
         ],
       },
-
-      // { path: "*", redirect: "/products" }, // catch-all for invalid product id
     ],
   },
   { path: "/about", name: "about", component: AboutView },
