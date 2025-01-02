@@ -1,213 +1,153 @@
 <template>
-  <!-- <v-container>
+  <v-container>
     <v-row>
       <v-col cols="8">
-        <v-table height="550px" fixed-header>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Title</th>
-              <th>Category</th>
-              <th>Price</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(product, index) in products" :key="product.id">
-              <th class="text-center">{{ index + 1 }}</th>
-              <td class="text-left">{{ product.title }}</td>
-              <td class="text-left">{{ product.category }}</td>
-              <td class="text-right">{{ product.price }}</td>
-              <td>
-                <router-link
-                  :to="{ name: 'product-details', params: { id: product.id } }"
-                  class="action-link view-link"
-                  title="View product details"
+        <v-row>
+          <v-col cols="12">
+            <div class="search-box">
+              <BaseInput
+                type="text"
+                label="Search (filter): "
+                id="searchQueryByFilter"
+                placeholder="Search products by Filter..."
+                v-model="searchQueryByFilter"
+              />
+              <BaseInput
+                type="date"
+                label="Created form: "
+                id="createDateFrom"
+                v-model="createDateFrom"
+              />
+
+              <BaseInput
+                type="date"
+                label="Created to: "
+                id="createDateTo"
+                v-model="createDateTo"
+              />
+            </div>
+          </v-col>
+          <v-col cols="12">
+            <v-table height="600px" fixed-header>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Images</th>
+                  <th>Title</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Create At</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(product, index) in filteredProducts"
+                  :key="product.id"
                 >
-                  <i class="pi pi-eye"></i>
-                </router-link>
-                <span class="action-separator"> | </span>
-                <CreateProductWithVuelidateModel :productId="product.id" />
-              </td>
-            </tr>
-          </tbody>
-        </v-table>
+                  <th class="text-center">{{ index + 1 }}</th>
+                  <th>
+                    <img
+                      :src="product.thumbnail"
+                      :alt="product.title"
+                      class="product-image"
+                    />
+                  </th>
+                  <td class="text-left">{{ product.title }}</td>
+                  <td class="text-left">{{ product.category }}</td>
+                  <td class="text-right">${{ product.price }}</td>
+                  <td class="text-right">
+                    {{ moment(product.meta.createdAt).format("DD/MM/YYYY") }}
+                  </td>
+                  <td>
+                    <router-link
+                      :to="{
+                        name: 'product-details',
+                        params: { id: product.id },
+                      }"
+                      class="action-link view-link"
+                      title="View product details"
+                    >
+                      <i class="pi pi-eye"></i>
+                    </router-link>
+                    <span class="action-separator"> | </span>
+                    <CreateProductWithVuelidateModel :productId="product.id" />
+                  </td>
+                </tr>
+              </tbody> </v-table
+          ></v-col>
+          <v-col cols="12">
+            <v-pagination
+              v-model="currentPage"
+              :length="totalPages"
+              @update:model-value="fetchProducts"
+            ></v-pagination
+          ></v-col>
+        </v-row>
       </v-col>
       <v-col cols="4">
         <router-view :key="$route.fullPath"></router-view>
       </v-col>
     </v-row>
-    <v-row>
-      <v-col cols="12">
-        <v-pagination
-          v-model="currentPage"
-          :length="totalPagess"
-          @update:model-value="fetchProducts"
-        ></v-pagination>
-      </v-col>
-    </v-row>
-  </v-container> -->
-
-  <div class="product-page">
-    <div class="product-list-container">
-      <h2 v-rainbow>Product List ({{ totalProductCount }})</h2>
-
-      <h4>Normal Input</h4>
-      <div class="search-box">
-        <div class="input-w100">
-          <label>Search: </label>
-          <input
-            v-model="searchQueryByFilter"
-            type="text"
-            placeholder="Search products by Filter..."
-          />
-        </div>
-
-        <div class="input-w100">
-          <label for="expiryDateFrom">Create from: </label>
-          <input type="date" id="createDateFrom" v-model="createDateFrom" />
-        </div>
-
-        <div class="input-w100">
-          <label for="expiryDateTo">Create to: </label>
-          <input type="date" id="createDateTo" v-model="createDateTo" />
-        </div>
-      </div>
-
-      <h4>Custom Input</h4>
-      <div class="search-box">
-        <BaseInput
-          type="text"
-          label="Search: "
-          id="searchQueryByFilter"
-          placeholder="Search products by Filter..."
-          v-model="searchQueryByFilter"
-        />
-        <BaseInput
-          type="date"
-          label="Create date form: "
-          id="createDateFrom"
-          v-model="createDateFrom"
-        />
-
-        <BaseInput
-          type="date"
-          label="Create date to: "
-          id="createDateTo"
-          v-model="createDateTo"
-        />
-      </div>
-
-      <table class="product-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Image</th>
-            <th>Title</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(product, index) in filteredProducts" :key="product.id">
-            <td>{{ index + 1 }}</td>
-            <td>
-              <img
-                :src="product.thumbnail"
-                :alt="product.title"
-                class="product-image"
-              />
-            </td>
-            <td>{{ product.title }}</td>
-            <td>
-              <router-link
-                :to="{ name: 'product-details', params: { id: product.id } }"
-                class="action-link view-link"
-                title="View product details"
-              >
-                <i class="pi pi-eye"></i>
-              </router-link>
-              <span class="action-separator">|</span>
-              <CreateProductWithVuelidateModel :productId="product.id" />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="text-center">
-        <v-pagination
-          v-model="page"
-          :length="totalPages"
-          next-icon="mdi-menu-right"
-          prev-icon="mdi-menu-left"
-          @click="changePage(page)"
-        >
-        </v-pagination>
-      </div>
-    </div>
-
-    <div class="product-details-container">
-      <router-view :key="$route.fullPath"></router-view>
-    </div>
-  </div>
+  </v-container>
 </template>
 
 <script setup>
 import { ref, computed, watch } from "vue";
-import BaseInput from "@/components/BaseInput.vue";
+import api from "@/plugins/axios";
 import CreateProductWithVuelidateModel from "@/components/CreateProductWithVuelidateModel.vue";
-import useGetAllProducts from "@/composables/products/useGetAllProducts.js";
+import BaseInput from "@/components/BaseInput.vue";
+import moment from "moment";
+
+const products = ref([]);
+const currentPage = ref(1);
+const totalPages = ref(1);
 
 const searchQueryByFilter = ref("");
 const createDateFrom = ref("");
 const createDateTo = ref("");
-const limit = ref(30);
-const page = ref(1);
+const limit = ref(20);
+const skip = ref(0); // ref((currentPage.value - 1) * limit.value);
 
-const { getProducts, filteredProducts, totalProductCount, totalProduct } =
-  useGetAllProducts(searchQueryByFilter, createDateFrom, createDateTo);
+const fetchProducts = async () => {
+  skip.value = (currentPage.value - 1) * limit.value;
 
-const totalPages = computed(() => Math.ceil(totalProduct.value / limit.value));
-
-const skip = computed(() => (page.value - 1) * limit.value);
-
-watch(
-  [page, limit],
-  () => {
-    getProducts(limit.value, skip.value);
-  },
-  { immediate: true }
-);
-
-watch([searchQueryByFilter, createDateFrom, createDateTo], () => {
-  page.value = 1;
-  getProducts(limit.value, skip.value);
-});
-
-const changePage = (newPage) => {
-  page.value = newPage;
+  try {
+    const response = await api.get(
+      `https://dummyjson.com/products?limit=${limit.value}&skip=${skip.value}`
+    );
+    products.value = response.data.products;
+    totalPages.value = Math.ceil(response.data.total / limit.value);
+  } catch (error) {
+    console.error("Error fetching products:", error);
+  }
 };
 
-// const products = ref([]);
-// const currentPage = ref(1);
-// const totalPagess = ref(1);
+watch(currentPage, fetchProducts);
 
-// const fetchProducts = async () => {
-//   const limit = 30;
-//   const skip = (currentPage.value - 1) * limit;
+fetchProducts();
 
-//   try {
-//     const response = await api.get(
-//       `https://dummyjson.com/products?limit=${limit}&skip=${skip}`
-//     );
-//     products.value = response.data.products;
-//     totalPagess.value = Math.ceil(response.data.total / limit);
-//   } catch (error) {
-//     console.error("Error fetching products:", error);
-//     // Xử lý lỗi (ví dụ: hiển thị thông báo lỗi cho người dùng)
-//   }
-// };
+const filteredProducts = computed(() => {
+  const filtered = products.value.filter((product) => {
+    const createDate = new Date(product.meta.createdAt);
 
-// onMounted(fetchProducts);
+    const isAfterExpiryFrom =
+      !createDateFrom.value || createDate >= new Date(createDateFrom.value);
+    const isBeforeExpiryTo =
+      !createDateTo.value || createDate <= new Date(createDateTo.value);
+
+    const isNameMatch =
+      product.title
+        .toLowerCase()
+        .includes(searchQueryByFilter.value.toLowerCase()) ||
+      product.description
+        .toLowerCase()
+        .includes(searchQueryByFilter.value.toLowerCase());
+    return isAfterExpiryFrom && isBeforeExpiryTo && isNameMatch;
+  });
+
+  return filtered;
+});
 </script>
 
 <style lang="scss" scoped>
@@ -215,6 +155,12 @@ $primary-color: #007bff;
 $success-color: #3ab33a;
 $border-color: #ddd;
 $background-color: #f8f9fa;
+
+.product-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+}
 
 .product-page {
   display: grid;
@@ -302,5 +248,23 @@ input {
   width: 100%;
   margin-bottom: 10px;
   margin-right: 10px;
+}
+
+.action-link {
+  color: $success-color;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 20px;
+
+  &:hover {
+    text-decoration: underline;
+    color: $primary-color;
+  }
+}
+
+.action-separator {
+  margin: 0 5px;
+  color: #ccc;
+  font-size: 20px;
 }
 </style>

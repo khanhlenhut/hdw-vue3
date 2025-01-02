@@ -1,33 +1,45 @@
 <template>
-  <div v-if="product" class="product-detail">
-    <h2 v-rainbow class="product-title">{{ product.title }}</h2>
-    <div class="product-content">
-      <div class="product-image">
-        <div class="main-image">
-          <img :src="product.images[0]" :alt="product.title" />
-        </div>
-        <div class="thumbnail-images">
-          <img
-            v-for="(image, index) in product.images.slice(1)"
-            :key="index"
-            :src="image"
-            :alt="product.title"
-          />
-        </div>
-      </div>
-      <div class="product-info">
-        <!-- <p><strong>ID:</strong> {{ product.id }}</p> -->
-        <p><strong>Description:</strong> {{ product.description }}</p>
-        <p><strong>Category:</strong> {{ product.category }}</p>
-        <p>
-          <strong>Price:</strong>
-          <span v-format-number>{{ product.price }}</span>
-        </p>
-        <p><strong>Tags:</strong> {{ product.tags.join(", ") }}</p>
-        <p><strong>Brand:</strong> {{ product.brand }}</p>
-      </div>
-    </div>
-  </div>
+  <v-card
+    v-if="product"
+    :disabled="loading"
+    :loading="loading"
+    class="mx-auto my-12"
+    max-width="auto"
+  >
+    <template v-slot:loader="{ isActive }">
+      <v-progress-linear
+        :active="isActive"
+        color="deep-purple"
+        height="4"
+        indeterminate
+      ></v-progress-linear>
+    </template>
+
+    <v-carousel>
+      <v-carousel-item
+        v-for="image in product.images"
+        :key="image"
+        :src="image"
+        cover
+      ></v-carousel-item>
+    </v-carousel>
+
+    <v-divider class="mx-4 mb-1"></v-divider>
+
+    <v-card-item>
+      <v-card-title>{{ product.title }}</v-card-title>
+
+      <v-card-subtitle>
+        <span class="me-1">{{ product.category }}</span>
+      </v-card-subtitle>
+    </v-card-item>
+
+    <v-card-text>
+      <div class="my-4 text-subtitle-1">$ {{ product.price }}</div>
+
+      <div>{{ product.description }}</div>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script setup>
