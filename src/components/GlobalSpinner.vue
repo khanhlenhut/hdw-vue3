@@ -8,11 +8,11 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
 import { useLoadingStore } from "@/stores/loading";
-import { storeToRefs } from "pinia";
 
 const loadingStore = useLoadingStore();
-const { isLoading } = storeToRefs(loadingStore);
+const isLoading = computed(() => loadingStore.getIsLoading);
 </script>
 
 <style scoped>

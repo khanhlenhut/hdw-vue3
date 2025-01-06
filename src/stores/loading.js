@@ -18,4 +18,7 @@ export const useLoadingStore = defineStore("loading", {
       }
     },
   },
+  getters: {
+    getIsLoading: (state) => state.isLoading,
+  },
 });

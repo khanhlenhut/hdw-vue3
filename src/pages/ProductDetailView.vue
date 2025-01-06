@@ -43,10 +43,17 @@
 </template>
 
 <script setup>
+// COMPOSABLES
 import useGetProductById from "@/composables/products/useGetProductById.js";
 
 const { product, getProduct } = useGetProductById();
 getProduct();
+
+// STORE
+// import { useProductStore } from "@/stores/productStore.js";
+
+// const productStore = useProductStore();
+// const product = productStore.detailsProduct;
 </script>
 
 <style lang="scss" scoped>

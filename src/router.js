@@ -7,8 +7,15 @@ import ProductsListView from "./pages/ProductsListView.vue";
 import ProductDetailView from "./pages/ProductDetailView.vue";
 import ContactView from "./pages/ContactView.vue";
 import NotFoundView from "./pages/NotFoundView.vue";
+import LoginView from "@/pages/LoginView.vue";
 
 const routes = [
+  {
+    path: "/login",
+    name: "Login",
+    component: LoginView,
+  },
+
   { path: "/", name: "home", component: HomeView },
   {
     path: "/products",

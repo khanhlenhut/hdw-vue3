@@ -10,20 +10,20 @@
                 label="Search (filter): "
                 id="searchQueryByFilter"
                 placeholder="Search products by Filter..."
-                v-model="searchQueryByFilter"
+                @input="(e) => productStore.handleChangeSearch(e)"
               />
               <BaseInput
                 type="date"
                 label="Created form: "
                 id="createDateFrom"
-                v-model="createDateFrom"
+                @input="(e) => productStore.handleChangeDateFrom(e)"
               />
 
               <BaseInput
                 type="date"
                 label="Created to: "
                 id="createDateTo"
-                v-model="createDateTo"
+                @input="(e) => productStore.handleChangeDateTo(e)"
               />
             </div>
           </v-col>
@@ -42,7 +42,7 @@
               </thead>
               <tbody>
                 <tr
-                  v-for="(product, index) in filteredProducts"
+                  v-for="(product, index) in productStore.filteredProducts"
                   :key="product.id"
                 >
                   <th class="text-center">{{ index + 1 }}</th>
@@ -78,9 +78,9 @@
           ></v-col>
           <v-col cols="12">
             <v-pagination
-              v-model="currentPage"
-              :length="totalPages"
-              @update:model-value="fetchProducts"
+              v-model="productStore.currentPage"
+              :length="productStore.totalPages"
+              @update:model-value="productStore.fetchProducts"
             ></v-pagination
           ></v-col>
         </v-row>
@@ -93,61 +93,12 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
-import api from "@/plugins/axios";
 import CreateProductWithVuelidateModel from "@/components/CreateProductWithVuelidateModel.vue";
 import BaseInput from "@/components/BaseInput.vue";
 import moment from "moment";
+import { useProductStore } from "@/stores/productStore.js";
 
-const products = ref([]);
-const currentPage = ref(1);
-const totalPages = ref(1);
-
-const searchQueryByFilter = ref("");
-const createDateFrom = ref("");
-const createDateTo = ref("");
-const limit = ref(20);
-const skip = ref(0); // ref((currentPage.value - 1) * limit.value);
-
-const fetchProducts = async () => {
-  skip.value = (currentPage.value - 1) * limit.value;
-
-  try {
-    const response = await api.get(
-      `https://dummyjson.com/products?limit=${limit.value}&skip=${skip.value}`
-    );
-    products.value = response.data.products;
-    totalPages.value = Math.ceil(response.data.total / limit.value);
-  } catch (error) {
-    console.error("Error fetching products:", error);
-  }
-};
-
-watch(currentPage, fetchProducts);
-
-fetchProducts();
-
-const filteredProducts = computed(() => {
-  const filtered = products.value.filter((product) => {
-    const createDate = new Date(product.meta.createdAt);
-
-    const isAfterExpiryFrom =
-      !createDateFrom.value || createDate >= new Date(createDateFrom.value);
-    const isBeforeExpiryTo =
-      !createDateTo.value || createDate <= new Date(createDateTo.value);
-
-    const isNameMatch =
-      product.title
-        .toLowerCase()
-        .includes(searchQueryByFilter.value.toLowerCase()) ||
-      product.description
-        .toLowerCase()
-        .includes(searchQueryByFilter.value.toLowerCase());
-    return isAfterExpiryFrom && isBeforeExpiryTo && isNameMatch;
-  });
-
-  return filtered;
-});
+const productStore = useProductStore();
 </script>
 
 <style lang="scss" scoped>
